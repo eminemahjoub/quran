@@ -3,24 +3,53 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card: rgba(255, 255, 255, 0.6);
+  --cardBorder: rgba(0, 0, 0, 0.08);
+  --muted: rgba(0, 0, 0, 0.6);
+  --accent: #0ea37f; /* emerald */
+  --gold: #d6b25e;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-cardBorder: var(--cardBorder);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-gold: var(--gold);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-arabic: var(--font-arabic);
+  --font-arabic-alt: var(--font-arabic-alt);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.dark {
+  --background: #070a12; /* deep navy */
+  --foreground: #f2f4f8;
+  --card: rgba(255, 255, 255, 0.06);
+  --cardBorder: rgba(255, 255, 255, 0.12);
+  --muted: rgba(242, 244, 248, 0.72);
+  --accent: #17b992;
+  --gold: #e0c37a;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, Segoe UI, Roboto,
+    Arial, sans-serif;
+}
+
+.font-arabic {
+  font-family: var(--font-arabic), var(--font-arabic-alt), system-ui;
+}
+
+/* Respectful readability: no distracting motion on Quran text */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
 }
