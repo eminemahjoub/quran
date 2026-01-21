@@ -17,7 +17,9 @@ export function AudioPlayer({ verses, startAtIndex = 0, title }: Props) {
   const [volume, setVolume] = useState(0.9);
 
   const current = verses[index];
-  const src = current?.audio?.url ? normalizeAudioUrl(current.audio.url) : null;
+  // Handle different audio URL structures from API
+  const audioUrl = current?.audio?.url || current?.audio?.primary;
+  const src = audioUrl ? normalizeAudioUrl(audioUrl) : null;
 
   const label = useMemo(() => {
     if (!current) return "Audio";
@@ -56,9 +58,20 @@ export function AudioPlayer({ verses, startAtIndex = 0, title }: Props) {
     const audio = audioRef.current;
     if (!audio) return;
     if (!src) return;
+
+    // If the audio fails, surface it and stop playback.
+    const handleError = () => {
+      setIsPlaying(false);
+    };
+
+    audio.addEventListener("error", handleError);
     audio.src = src;
     // autoplay when switching and currently playing
     if (isPlaying) void audio.play();
+    
+    return () => {
+      audio.removeEventListener("error", handleError);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src, index]);
 
@@ -140,8 +153,18 @@ export function AudioPlayer({ verses, startAtIndex = 0, title }: Props) {
 }
 
 function normalizeAudioUrl(url: string): string {
-  // Quran.com sometimes returns protocol-relative URLs
-  if (url.startsWith("//")) return `https:${url}`;
-  return url;
+  // Already absolute URL
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  // Protocol-relative URL (//example.com/path)
+  if (url.startsWith("//")) {
+    return `https:${url}`;
+  }
+
+  // Quran.com API v4 often returns paths like "Alafasy/mp3/002001.mp3"
+  // Those are hosted under verses.quran.com.
+  const path = url.startsWith("/") ? url.slice(1) : url;
+  return `https://verses.quran.com/${path}`;
 }
 

@@ -23,7 +23,12 @@ export type Verse = {
   words?: VerseWord[];
   translations?: Array<{ id: number; text: string }>;
   transliteration?: { text: string };
-  audio?: { url: string };
+  audio?: {
+    url?: string;
+    // API might return audio in different structures
+    primary?: string;
+    secondary?: string[];
+  };
 };
 
 const API_BASE = "https://api.quran.com/api/v4";
